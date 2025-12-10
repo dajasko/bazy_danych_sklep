@@ -219,7 +219,7 @@ def read_products():
     conn.close()
     
     return products
-@app.post("/cart/add")
+@app.put("/cart/add")
 def add_to_cart(item: CartItemCreate, user_id: int = Depends(get_current_user_id)):
     """Dodaje produkt do aktywnego koszyka użytkownika."""
     conn = get_db()
@@ -294,7 +294,7 @@ def add_to_cart(item: CartItemCreate, user_id: int = Depends(get_current_user_id
         conn.close()
 
     return {"message": "Produkt dodany do koszyka", "order_id": order_id}
-@app.post("/checkout")
+@app.patch("/checkout")
 def checkout(user_id: int = Depends(get_current_user_id)):
     """Finalizuje aktywne zamówienie użytkownika i zmienia jego status na 'Completed'."""
     conn = get_db()
@@ -341,7 +341,7 @@ def checkout(user_id: int = Depends(get_current_user_id)):
         "order_id": order_id, 
         "total_amount": float(total_amount)
     }
-@app.post("/orders/{order_id}/ship")
+@app.patch("/orders/{order_id}/ship")
 def ship_order(
     order_id: int = Path(..., description="ID zamówienia, które ma zostać wysłane"),
     user_id: int = Depends(get_current_user_id)
@@ -383,7 +383,7 @@ def ship_order(
         conn.close()
 
     return {"message": f"Status zamówienia {order_id} zaktualizowany na 'Shipped'.", "order_id": order_id}
-@app.post("/cart/remove")
+@app.delete("/cart/remove")
 def remove_from_cart(item: CartItemRemove, user_id: int = Depends(get_current_user_id)):
     """Usuwa określoną pozycję z aktywnego koszyka użytkownika."""
     conn = get_db()
@@ -435,7 +435,7 @@ def remove_from_cart(item: CartItemRemove, user_id: int = Depends(get_current_us
 
     return {"message": "Produkt usunięty z koszyka, suma zaktualizowana.", "order_id": order_id}
 
-@app.post("/orders/{order_id}/cancel")
+@app.patch("/orders/{order_id}/cancel")
 def cancel_order(
     order_id: int = Path(..., description="ID zamówienia do anulowania"),
     user_id: int = Depends(get_current_user_id)
